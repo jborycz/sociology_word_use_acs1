@@ -19,6 +19,10 @@ file_name <- "soc_cap_doi"
 new_folder <- "/data/borycz_lab/acs_sociology_abstracts"
 #dir.create(paste0(new_folder))
 
+# SPECIFY FILTER FOR NUMBER OF CITATIONS.
+## For example, filter_num = 10 will only gather DOIs with 10 or more citations.
+filter_num <- 10
+
 result1 <- rjson::fromJSON(file = opcit)
 citing1 <- lapply(result1, function(x){
   x[['citing']]
@@ -44,7 +48,7 @@ for (i in seq(1,nrow(citing1_df),1)){
       filter1 <- rjson::fromJSON(file = paste0("https://opencitations.net/index/coci/api/v1/citations/",doi))},
       error=function(e) "error",
       warning = function(e) "warning")
-    if (length(filter1)>=10) {
+    if (length(filter1)>=as.numeric(filter_num)) {
       filter1_citing <- lapply(filter1, function(x){x[['citing']]})
       filter1_citing <- unlist(filter1_citing)
       filter1_selection <- data.frame(filter1_citing)
@@ -61,4 +65,4 @@ for (i in seq(1,nrow(citing1_df),1)){
   m=m+1
   citing1_df <- filter1_df
   while_test <- isTRUE("YES" %in% test_list)
-
+}
