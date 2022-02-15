@@ -46,13 +46,13 @@ for (i in seq(1,length(citing1_unlisted),100)){
     warning = function(e) "warning")
   citing1_crossref_100 <- data.frame(citing1_crossref$data)
   crossref_load_df1 <- bind_rows(crossref_load_df1,citing1_crossref_100)
-  print(paste("Crossref load",1,i,i+100,length(citing1_unlisted),sep=" "))
+  print(paste("Crossref load",1,i,k,length(citing1_unlisted),sep=" "))
   }
 }
 ## Delete unnecessary list columns and change remaining to characters
 crossref_load_df1.backup <- crossref_load_df1
 col_select <- colnames(crossref_load_df1)
-nope <- c("assertion","link","funder","license","update_to","abstract","reference")
+nope <- c("assertion","link","funder","license","update_to","url","update.policy","archive","abstract","reference")
 col_select <- col_select[col_select %in% nope  == FALSE]
 crossref_load_df1 <- subset(crossref_load_df1,select=col_select)
 print(paste("Unnecessary columns deleted"))
@@ -75,9 +75,9 @@ print(paste("Unnecessary columns deleted"))
 #    print(paste("Clean references",i,nrow(crossref_load_df2),sep=" "))
 #  }
 #}
-crossref_load_df1 <- sapply(crossref_load_df1, function(x) paste0(unlist(x), collapse = "\n"))
 
 ## Export citations to CSV
+crossref_load_df1$author <- sapply(crossref_load_df1$author, function(x) paste0(unlist(x), collapse = ";"))
 current_time <- gsub(":","",gsub(" ","_",Sys.time()))
 write_excel_csv(crossref_load_df1,paste0(new_folder,"/all_crossref_data_1_",current_time,".csv"))
 # crossref_load_df1 <- read.csv(paste0(new_folder,"/all_crossref_data_1.csv"))
@@ -157,7 +157,7 @@ citing2_crossref <- rcrossref::cr_works(citing2)
 ##  Delete unnecessary list columns and change remaining to characters
 crossref_load_df2.backup <- crossref_load_df2
 col_select <- colnames(crossref_load_df2)
-nope <- c("assertion","link","funder","license","update_to","abstract","reference")
+nope <- c("assertion","link","funder","license","update_to","url","update.policy","archive","abstract","reference")
 col_select <- col_select[col_select %in% nope  == FALSE]
 crossref_load_df2 <- subset(crossref_load_df2,select=col_select)
 print(paste("Unnecessary columns deleted"))
@@ -180,8 +180,7 @@ print(paste("Unnecessary columns deleted"))
 #    print(paste("Clean references",i,sep=" "))
 #  }
 #}
-crossref_load_df2 <- sapply(crossref_load_df2, function(x) paste0(unlist(x), collapse = ";"))
-crossref_load_df2$reference <- sapply(crossref_load_df2$reference, function(x) paste0(unlist(x), collapse = "\n"))
+crossref_load_df2$author <- sapply(crossref_load_df2$author, function(x) paste0(unlist(x), collapse = ";"))
 current_time <- gsub(":","",gsub(" ","_",Sys.time()))
 write_excel_csv(crossref_load_df2,paste0(new_folder,"/all_crossref_data_",j,"_",curent_time,".csv"))
 
