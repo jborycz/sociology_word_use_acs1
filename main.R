@@ -77,7 +77,10 @@ print(paste("Unnecessary columns deleted"))
 #}
 
 ## Export citations to CSV
-crossref_load_df1$author <- sapply(crossref_load_df1$author, function(x) paste0(unlist(x), collapse = ";"))
+for (n in seq(1,ncol(crossref_load_df1),1)){
+  print(paste("Clean column",colnames(crossref_load_df1[n]),sep=" "))
+  crossref_load_df1[,n] <- sapply(crossref_load_df1[,n], function(x) paste0(unlist(x), collapse = ";"))
+}
 current_time <- gsub(":","",gsub(" ","_",Sys.time()))
 write_excel_csv(crossref_load_df1,paste0(new_folder,"/all_crossref_data_1_",current_time,".csv"))
 # crossref_load_df1 <- read.csv(paste0(new_folder,"/all_crossref_data_1.csv"))
@@ -131,7 +134,7 @@ citing2 <- temp_df
 
 ## Extract reference information on citations from crossref 
 crossref_load_df2 <- data.frame()
-for (i in seq(1,nrow(citing2)-100,100)){
+for (i in seq(1,nrow(citing2),100)){
   test_i <- nrow(citing2)-i
   if (test_i<100){
     tryCatch({
@@ -180,9 +183,12 @@ print(paste("Unnecessary columns deleted"))
 #    print(paste("Clean references",i,sep=" "))
 #  }
 #}
-crossref_load_df2$author <- sapply(crossref_load_df2$author, function(x) paste0(unlist(x), collapse = ";"))
+for (n in seq(1,ncol(crossref_load_df2),1)){
+  print(paste("Clean column",colnames(crossref_load_df2[n]),sep=" "))
+  crossref_load_df2[,n] <- sapply(crossref_load_df2[,n], function(x) paste0(unlist(x), collapse = ";"))
+}
 current_time <- gsub(":","",gsub(" ","_",Sys.time()))
-write_excel_csv(crossref_load_df2,paste0(new_folder,"/all_crossref_data_",j,"_",curent_time,".csv"))
+write_excel_csv(data.frame(crossref_load_df2),paste0(new_folder,"/all_crossref_data_",j,"_",current_time,".csv"))
 
 ## Limit to articles with >=5 citations
 citing2_crossref_df <- data.frame()
