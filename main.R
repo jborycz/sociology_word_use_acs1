@@ -191,11 +191,12 @@ current_time <- gsub(":","",gsub(" ","_",Sys.time()))
 write_excel_csv(data.frame(crossref_load_df2),paste0(new_folder,"/all_crossref_data_",j,"_",current_time,".csv"))
 
 ## Limit to articles with >=5 citations
+filter_num <- round(100/2^(j-1))
 citing2_crossref_df <- data.frame()
-for (i in seq(1,nrow(crossref_load_df),1)){
+for (i in seq(1,nrow(crossref_load_df2),1)){
   citing2_crossref_row <- crossref_load_df2[i,]
   citing2_crossref_row$cited_doi <- citing2$cited_doi[i]
-  if (citing2_crossref_row$type=="journal-article" & as.numeric(citing2_crossref_row$is.referenced.by.count)>=100){
+  if (citing2_crossref_row$type=="journal-article" & as.numeric(citing2_crossref_row$is.referenced.by.count)>=as.numeric(filter_num)){
     tryCatch({
       citing2_crossref_df <- bind_rows(citing2_crossref_df,citing2_crossref_row)},
       error=function(e) "error",
@@ -213,7 +214,6 @@ current_time <- gsub(":","",gsub(" ","_",Sys.time()))
 write_excel_csv(citing2_crossref_df,paste0(new_folder,"/filtered_crossref_data_",j,"_",current_time,".csv"))
 citing1_filtered <- citing2_crossref_df$doi
 j=j+1
-} 
+}
 sink()
-
 
