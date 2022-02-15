@@ -4,14 +4,18 @@ library(pacman)
 #remotes::install_github("ropensci/rcrossref")
 pacman::p_load(rjson,dplyr,tidyr,tibble,R.utils,data.table,stringr,readr)
 
-# Get papers citing "DIFFUSION-LIMITED AGGREGATION, A KINETIC CRITICAL PHENOMENON"
+# SELECT WHICH PAPER YOU WANT TO COLLECT DOIs FROM
+## Get papers citing "DIFFUSION-LIMITED AGGREGATION, A KINETIC CRITICAL PHENOMENON"
 #  opcit <- "https://opencitations.net/index/coci/api/v1/citations/10.1103/PhysRevLett.47.1400"
-# Get papers citing "Social capital, intellectual capital, and the organizational advantage"
+## Get papers citing "Social capital, intellectual capital, and the organizational advantage"
   opcit <- "https://opencitations.net/index/coci/api/v1/citations/10.2307/259373"
-# Get papers citing "Emergence of scaling in random networks "
+## Get papers citing "Emergence of scaling in random networks "
   #opcit <- "https://opencitations.net/index/coci/api/v1/citations/10.1126/science.286.5439.509"
 
-# Create folder for output files
+# SPECIFY DESIRED FILENAME TO EXPORT FILES
+file_name <- "soc_cap_doi"
+
+# CREATE FOLDER FOR FILE EXPORT
 new_folder <- "/data/borycz_lab/acs_sociology_abstracts"
 #dir.create(paste0(new_folder))
 
@@ -26,7 +30,7 @@ while_test <- TRUE
 citing1_df <- data.frame(citing1_unlisted)
 colnames(citing1_df) <- "doi"
 citing1_df$cit_level <- 1
-write.csv(citing1_df,file=paste0(new_folder,"/soc_cap_doi_1.csv"))
+write.csv(filter1_df,file=paste0(new_folder,"/",file_name,"_1.csv"))
 
 m=2
 while (while_test) {
@@ -53,7 +57,7 @@ for (i in seq(1,nrow(citing1_df),1)){
       test_list <- append(test_list,"NO")
       print(paste("Filter",m,i,nrow(citing1_df),sep=" "));next}
 }
-  write.csv(filter1_df,file=paste0(new_folder,"/soc_cap_doi_",m,".csv"))
+  write.csv(filter1_df,file=paste0(new_folder,"/",file_name,"_",m,".csv"))
   m=m+1
   citing1_df <- filter1_df
   while_test <- isTRUE("YES" %in% test_list)
