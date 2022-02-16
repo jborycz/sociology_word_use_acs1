@@ -26,7 +26,7 @@ citing1 <- lapply(result1, function(x){
 })
 citing1_unlisted <- unlist(citing1)
 
-## Extract reference information on citations from crossref 
+## Extract article metadata
 crossref_load_df1 <- data.frame()
 for (i in seq(1,length(citing1_unlisted),100)){
   test_i <- length(citing1_unlisted)-i
