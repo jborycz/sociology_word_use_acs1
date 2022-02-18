@@ -16,11 +16,10 @@ pacman::p_load(rjson,dplyr,tidyr,tibble,R.utils,data.table,stringr,readr)
 testit <- function(x){p1 <- proc.time();Sys.sleep(x);proc.time() - p1} # SLEEP TIMER
 sleep_time <- 0.0 # SPECIFY SLEEP TIME BETWEEN API CALLS
 file_name <- "diff_lim_agg" # SPECIFY DESIRED FILENAME TO EXPORT FILES
-dir.create(paste0(new_folder)) # CREATE OUTPUT FOLDER
 filter_low <- 0  # SPECIFY LOW FILTER FOR NUMBER OF CITATIONS. For example, filter_low = 10 will only gather DOIs with 10 or more citations.
 filter_high <- 100 # SPECIFY LOW FILTER FOR NUMBER OF CITATIONS. For example, filter_high = 20 will only gather DOIs with 20 or fewer citations.
 new_folder <- paste0("output/coci/","cit_",filter_low,"_",filter_high) # SPECIFY OUTPUT LOCATION
-dir.create(paste0(new_folder))
+dir.create(paste0(new_folder)) # CREATE OUTPUT FOLDER
 
 # Check if output files exist
 output_list <- as.list(list.files(new_folder))
