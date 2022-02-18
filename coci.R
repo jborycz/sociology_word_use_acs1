@@ -16,33 +16,85 @@ pacman::p_load(rjson,dplyr,tidyr,tibble,R.utils,data.table,stringr,readr)
 testit <- function(x){p1 <- proc.time();Sys.sleep(x);proc.time() - p1} # SLEEP TIMER
 sleep_time <- 0.0 # SPECIFY SLEEP TIME BETWEEN API CALLS
 file_name <- "diff_lim_agg" # SPECIFY DESIRED FILENAME TO EXPORT FILES
-new_folder <- "output/coci" # SPECIFY OUTPUT LOCATION
 dir.create(paste0(new_folder)) # CREATE OUTPUT FOLDER
-filter_num <- 50 # SPECIFY FILTER FOR NUMBER OF CITATIONS. For example, filter_num = 10 will only gather DOIs with 10 or more citations.
+filter_low <- 0  # SPECIFY LOW FILTER FOR NUMBER OF CITATIONS. For example, filter_low = 10 will only gather DOIs with 10 or more citations.
+filter_high <- 100 # SPECIFY LOW FILTER FOR NUMBER OF CITATIONS. For example, filter_high = 20 will only gather DOIs with 20 or fewer citations.
+new_folder <- paste0("output/coci/","cit_",filter_low,"_",filter_high) # SPECIFY OUTPUT LOCATION
+dir.create(paste0(new_folder))
 
+# Check if output files exist
+output_list <- as.list(list.files(new_folder))
+output_nums <- as.numeric(gsub(".*?([0-9]+).*", "\\1", output_list))
+output_num_list <- as.list(output_nums)
+max_output <- as.numeric(max(output_nums))
+max_output_minus1 <- max_output - 1
+num_file <- output_list[[which(max_output==output_num_list)]]
+num_file_minus1 <- output_list[[which(max_output_minus1==output_num_list)]]
+
+# Set condition to read in previous file to continue run
+if (isTRUE(length(output_num_list) == 0)) {
+  
 # Get citations from main paper
 result1 <- rjson::fromJSON(file = opcit)
 citing1 <- lapply(result1, function(x){x[['citation']]})
 citing1 <- as.list(strsplit(citing1[[1]], '; '))
 citing1 <- unlist(citing1)
 
-## Filter DOI by number of citations
-while_test <- TRUE
+## Save 1st paper metadata to CSV file and dataframe
 citing1_df <- data.frame(result1)
-citing1_df <- subset(citing1_df,select=-c(citation))
 citing1_df$cit_level <- 0
 current_time <- gsub(":","",gsub(" ","_",Sys.time()))
-write.csv(citing1_df,file=paste0(new_folder,"/",file_name,"_0_",current_time,".csv"))
-
+write_excel_csv(citing1_df,paste0(new_folder,"/",file_name,"_0_complete.csv"))
 m=1
-while (while_test) {
-  filter2_df <- data.frame()
-  citing2_save <- list()
+} else {m <- as.numeric(max_output)
+        complete_test <- file.exists(paste0(new_folder,"/",file_name,"_",m,"_complete.csv"))
+        if (complete_test){
+          citing1_df <- data.frame(read.csv(paste0(new_folder,"/",file_name,"_",m,"_complete.csv"),stringsAsFactors = FALSE))
+          citing1 <- citing1_df$citation
+          citing1 <- as.list(strsplit(citing1, '; '))
+          citing1 <- unlist(citing1)
+          m<-m+1
+        } else{
+          n <- m-1
+          previous_data <- data.frame(read.csv(paste0(new_folder,"/",file_name,"_",n,"_complete.csv"),encoding="UTF-8"))
+          previous_data <- previous_data$citation
+          previous_data <- as.list(strsplit(previous_data, '; '))
+          previous_data <- unlist(previous_data)
+          temp <- paste0(new_folder,"/",file_name,"_",m,".csv")
+          citing1_df <- data.frame(read.csv(paste0(new_folder,"/",file_name,"_",m,".csv"),encoding="UTF-8",stringsAsFactors = FALSE))
+          citing1_df$volume <- as.character(citing1_df$volume)
+          citing1_df$year <- as.character(citing1_df$year)
+          citing1_df$citation_count <- as.character(citing1_df$citation_count)
+          citing1 <- citing1_df$doi
+          citing1 <- as.list(strsplit(citing1, '; '))
+          citing1 <- unlist(citing1)
+          last_doi <- tail(citing1,n=1)[[1]]
+          last_index <- as.numeric(tail(as.list(which(previous_data==last_doi)),n=1))+1
+          citing1 <- previous_data[last_index:length(previous_data)]
+          }}
+
+# Extract citation metadata 
+while_test <- TRUE
+stop_running <- isFALSE(is.na(citing1[1]))
+while (while_test & stop_running) {
+  stop_running <- isFALSE(is.na(citing1[1]))
+  complete_test <- file.exists(paste0(new_folder,"/",file_name,"_",m,"_complete.csv"))
+  partial_test <- file.exists(paste0(new_folder,"/",file_name,"_",m,".csv"))
+  if (isFALSE(complete_test) & isFALSE(partial_test)){
+    filter2_df <- data.frame()
+    citing2_save <- list()
+  } else if(isFALSE(complete_test) & partial_test) {
+    filter2_df <- citing1_df
+    citing2_save <- citing1
+  } else {
+    filter2_df <- data.frame()
+    citing2_save <- list()
+    }
   print(paste("citation_level=",m,sep=" "))
   test_list <- list()
 for (i in seq(1,length(citing1),1)){
     testit(sleep_time)
-    doi <- citing1[20]
+    doi <- citing1[i]
     tryCatch({
       filter2 <- rjson::fromJSON(file = paste0("https://opencitations.net/index/coci/api/v1/metadata/",doi))},
       error=function(e) "error",
@@ -52,9 +104,8 @@ for (i in seq(1,length(citing1),1)){
     citing2 <- strsplit(citing2, '; ')
     citing2 <- unlist(citing2)
     citing2_save <- append(citing2_save,citing2)
-    if (length(citing2)>=as.numeric(filter_num)) {
+    if (length(citing2)>=as.numeric(filter_low) & length(citing2)<=as.numeric(filter_high)) {
       filter2_selection <- data.frame(filter2)
-      filter2_selection <- subset(filter2_selection,select=-c(citation))
       filter2_selection$cit_level <- m
       filter2_df <- bind_rows(filter2_df,filter2_selection)
       test_list <- append(test_list,"YES")
@@ -62,11 +113,16 @@ for (i in seq(1,length(citing1),1)){
     } else {
       test_list <- append(test_list,"NO")
       print(paste("Filter",m,i,length(citing1),sep=" "));next}
+    write_excel_csv(filter2_df,paste0(new_folder,"/",file_name,"_",m,".csv"))
 }
   current_time <- gsub(":","",gsub(" ","_",Sys.time()))
-  write.csv(filter2_df,file=paste0(new_folder,"/",file_name,"_",m,"_",current_time,".csv"))
-  filter_num <- ifelse(round(filter_num/2^(m-1))==0,1,round(filter_num/m^(m-1)))
-  m=m+1
-  citing1 <- citing2_save
+  write_excel_csv(filter2_df,paste0(new_folder,"/",file_name,"_",m,"_complete.csv"))
+#  filter_num <- ifelse(round(filter_num/2^(m-1))==0,1,round(filter_num/m^(m-1)))
+#  citing1 <- citing2_save
+  citing1_df <- data.frame(read.csv(paste0(new_folder,"/",file_name,"_",m,"_complete.csv"),encoding="UTF-8",stringsAsFactors = FALSE))
+  citing1 <- citing1_df$citation
+  citing1 <- as.list(strsplit(citing1, '; '))
+  citing1 <- unlist(citing1)
+  m <- m+1
   while_test <- isTRUE("YES" %in% test_list)
 }
