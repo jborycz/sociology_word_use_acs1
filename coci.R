@@ -59,7 +59,6 @@ m=1
           previous_data <- previous_data$citation
           previous_data <- as.list(strsplit(previous_data, '; '))
           previous_data <- unlist(previous_data)
-          temp <- paste0(new_folder,"/",file_name,"_",m,".csv")
           citing1_df <- data.frame(read.csv(paste0(new_folder,"/",file_name,"_",m,".csv"),encoding="UTF-8",stringsAsFactors = FALSE))
           citing1_df$volume <- as.character(citing1_df$volume)
           citing1_df$year <- as.character(citing1_df$year)
