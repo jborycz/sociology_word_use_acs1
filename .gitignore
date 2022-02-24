@@ -2,6 +2,7 @@
 .Rhistory
 .RData
 .Ruserdata
+.RDataTmp
 sociology_word_use_ACS.Rproj
 output
 backup
