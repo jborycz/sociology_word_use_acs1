@@ -1,0 +1,31 @@
+path1 <- "/Users/boryczjd/Documents/Coding_Projects/sociology_word_use_acs1/output/coci/accre/cit_200_plus/cit_200_249/diff_lim_agg/"
+path2 <- "/Users/boryczjd/Documents/Coding_Projects/sociology_word_use_acs1/output/coci/accre/cit_200_plus/"
+dir.create(paste0(path2,"new"))
+dir.create(paste0(path2,"new/","cit_200_249"))
+dir.create(paste0(path2,"new/","cit_250_299"))
+dir.create(paste0(path2,"new/","cit_300_349"))
+dir.create(paste0(path2,"new/","cit_350_399"))
+dir.create(paste0(path2,"new/","cit_400_449"))
+dir.create(paste0(path2,"new/","cit_450_499"))
+dir.create(paste0(path2,"new/","cit_500_999"))
+dir.create(paste0(path2,"new/","cit_1000_1999"))
+
+for(i in seq(1,2,1)) {
+temp <- read.csv(paste0(path1,"diff_lim_agg_",i,"_complete.csv"),stringsAsFactors = FALSE)
+temp_200_249 <- subset(temp,citation_count>=200 & citation_count<=249);name <- paste0("new/cit_200_249/diff_lim_agg_",i,"_complete.csv")
+  write_excel_csv(temp_200_249,paste0(path2,name))
+temp_250_299 <- subset(temp,citation_count>=250 & citation_count<=299);name <- paste0("new/cit_250_299/diff_lim_agg_",i,"_complete.csv")
+  write_excel_csv(temp_250_299,paste0(path2,name))
+temp_300_349 <- subset(temp,citation_count>=300 & citation_count<=349);name <- paste0("new/cit_300_349/diff_lim_agg_",i,"_complete.csv")
+  write_excel_csv(temp_300_349,paste0(path2,name))
+temp_350_399 <- subset(temp,citation_count>=350 & citation_count<=399);name <- paste0("new/cit_350_399/diff_lim_agg_",i,"_complete.csv")
+  write_excel_csv(temp_350_399,paste0(path2,name))
+temp_400_449 <- subset(temp,citation_count>=400 & citation_count<=449);name <- paste0("new/cit_400_449/diff_lim_agg_",i,"_complete.csv")
+  write_excel_csv(temp_400_449,paste0(path2,name))
+temp_450_499 <- subset(temp,citation_count>=450 & citation_count<=499);name <- paste0("new/cit_450_499/diff_lim_agg_",i,"_complete.csv")
+  write_excel_csv(temp_450_499,paste0(path2,name))
+temp_500_999 <- subset(temp,citation_count>=500 & citation_count<=999);name <- paste0("new/cit_500_999/diff_lim_agg_",i,"_complete.csv")
+  write_excel_csv(temp_500_999,paste0(path2,name))
+temp_1000_1999 <- subset(temp,citation_count>=999 & citation_count<=1999);name <- paste0("new/cit_1000_1999/diff_lim_agg_",i,"_complete.csv")
+  write_excel_csv(temp_1000_1999,paste0(path2,name))
+}
