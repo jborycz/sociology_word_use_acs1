@@ -97,6 +97,10 @@ for (i in seq(1,length(citing1))){
       filter2 <- rjson::fromJSON(file = paste0("https://opencitations.net/index/coci/api/v1/metadata/",doi))},
       error=function(e) "error",
       warning = function(e) "warning")
+    year2 <- unlist(lapply(filter2, function(x){x[['year']]}))
+    if(exists("year1")){
+      if (as.numeric(year1[i])>=as.numeric(year2)){next}
+    }
     citing2 <- lapply(filter2, function(x){x[['citation']]})
     citing2 <- unlist(citing2)
     citing2 <- strsplit(citing2, '; ')
@@ -119,6 +123,7 @@ for (i in seq(1,length(citing1))){
 #  citing1 <- citing2_save
   citing1_df <- data.frame(read.csv(paste0(new_folder,"/",file_name,"_",m,"_complete.csv"),encoding="UTF-8",stringsAsFactors = FALSE))
   citing1 <- citing1_df$citation
+    year1 <- citing1_df$year
   citing1 <- as.list(strsplit(citing1, '; '))
   citing1 <- unlist(citing1)
   m <- m+1

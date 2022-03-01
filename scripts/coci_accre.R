@@ -14,10 +14,10 @@ opcit <- "https://opencitations.net/index/coci/api/v1/metadata/10.1103/PhysRevLe
 testit <- function(x){p1 <- proc.time();Sys.sleep(x);proc.time() - p1} # SLEEP TIMER
 sleep_time <- 0.0 # SPECIFY SLEEP TIME BETWEEN API CALLS
 file_name <- "diff_lim_agg" # SPECIFY DESIRED FILENAME TO EXPORT FILES
-filter_low <- 5  # SPECIFY LOW FILTER FOR NUMBER OF CITATIONS. For example, filter_low = 10 will only gather DOIs with 10 or more citations.
-filter_high <- 4000 # SPECIFY LOW FILTER FOR NUMBER OF CITATIONS. For example, filter_high = 20 will only gather DOIs with 20 or fewer citations.
-new_folder2 <- paste0("/data/borycz_lab/acs_sociology_abstracts/sample_5") # SPECIFY OUTPUT LOCATION
-new_folder <- paste0("/data/borycz_lab/acs_sociology_abstracts/sample_5/",file_name) # SPECIFY OUTPUT LOCATION
+filter_low <- 200  # SPECIFY LOW FILTER FOR NUMBER OF CITATIONS. For example, filter_low = 10 will only gather DOIs with 10 or more citations.
+filter_high <- 99999 # SPECIFY LOW FILTER FOR NUMBER OF CITATIONS. For example, filter_high = 20 will only gather DOIs with 20 or fewer citations.
+new_folder2 <- paste0("/data/borycz_lab/acs_sociology_abstracts/","cit_",filter_low,"_",filter_high) # SPECIFY OUTPUT LOCATION
+new_folder <- paste0("/data/borycz_lab/acs_sociology_abstracts/","cit_",filter_low,"_",filter_high,"/",file_name) # SPECIFY OUTPUT LOCATION
 if(isFALSE(file.exists(new_folder2))){
   dir.create(paste0(new_folder2)) 
 }
@@ -43,6 +43,7 @@ if (isTRUE(length(output_num_list) == 0)){
   # Get citations from main paper
   result1 <- rjson::fromJSON(file = opcit)
   citing1 <- lapply(result1, function(x){x[['citation']]})
+    year1 <- lapply(result1, function(x){x[['year']]})
   tryCatch({
     citing1 <- unlist(citing1)
     citing1 <- as.list(strsplit(citing1, '; '))
@@ -91,10 +92,11 @@ if (complete_test){
   citing1 <- previous_data[last_index:length(previous_data)]
 }}
 
-# Extract citation metadata
+# Extract citation metadata 
 while_test <- TRUE
 stop_running <- isFALSE(is.na(citing1[1]))
 while (while_test & stop_running) {
+  stop_running <- isFALSE(is.na(citing1[1]))
   complete_test <- file.exists(paste0(new_folder,"/",file_name,"_",m,"_complete.csv"))
   partial_test <- file.exists(paste0(new_folder,"/",file_name,"_",m,".csv"))
   if (isFALSE(complete_test) & isFALSE(partial_test)){
@@ -110,19 +112,21 @@ while (while_test & stop_running) {
   print(paste("citation_level=",m,sep=" "))
   test_list <- list()
   for (i in seq(1,length(citing1),1)){
-    rand_test <- isTRUE(sample(1:100, 1)<=5) # Random number test to get X% of papers
     testit(sleep_time)
     doi <- citing1[i]
-    if(rand_test) {
-      tryCatch({
-         filter2 <- rjson::fromJSON(file = paste0("https://opencitations.net/index/coci/api/v1/metadata/",doi))
-         citing2 <- lapply(filter2, function(x){x[['citation']]})
-         citing2 <- unlist(citing2)
-         citing2 <- strsplit(citing2, '; ')
-         citing2 <- unlist(citing2)
-         citing2_save <- append(citing2_save,citing2)},
-         error=function(e) "error",
-         warning = function(e) "warning")
+    tryCatch({
+      filter2 <- rjson::fromJSON(file = paste0("https://opencitations.net/index/coci/api/v1/metadata/",doi))
+      citing2 <- lapply(filter2, function(x){x[['citation']]})
+      citing2 <- unlist(citing2)
+      citing2 <- strsplit(citing2, '; ')
+      citing2 <- unlist(citing2)
+      citing2_save <- append(citing2_save,citing2)},
+      error=function(e) "error",
+      warning = function(e) "warning")
+    year2 <- unlist(lapply(filter2, function(x){x[['year']]}))
+    if(exists("year1")){
+      if (as.numeric(year1[i])>=as.numeric(year2)){next}
+    }
     if (length(citing2)>=as.numeric(filter_low) & length(citing2)<=as.numeric(filter_high)) {
       filter2_selection <- data.frame(filter2)
       filter2_selection$cit_level <- m
@@ -132,15 +136,15 @@ while (while_test & stop_running) {
     } else {
       test_list <- append(test_list,"NO")
       print(paste("Filter",m,i,length(citing1),sep=" "));next}
-      write_excel_csv(filter2_df,paste0(new_folder,"/",file_name,"_",m,".csv"))
-    } else {next}
-    }
+    write_excel_csv(filter2_df,paste0(new_folder,"/",file_name,"_",m,".csv"))
+  }
   current_time <- gsub(":","",gsub(" ","_",Sys.time()))
   write_excel_csv(filter2_df,paste0(new_folder,"/",file_name,"_",m,"_complete.csv"))
   #  filter_num <- ifelse(round(filter_num/2^(m-1))==0,1,round(filter_num/m^(m-1)))
   #  citing1 <- citing2_save
   citing1_df <- data.frame(read.csv(paste0(new_folder,"/",file_name,"_",m,"_complete.csv"),encoding="UTF-8",stringsAsFactors = FALSE))
   citing1 <- citing1_df$citation
+  year1 <- citing1_df$year
   tryCatch({
     citing1 <- as.list(strsplit(citing1, '; '))
     citing1 <- unlist(citing1)},
