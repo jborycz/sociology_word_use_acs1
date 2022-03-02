@@ -61,9 +61,9 @@ diff_lim_agg_sample <- rbind(diff_lim_agg_sample_5_3, diff_lim_agg_sample_5_4, d
 diff_lim_agg_all <- rbind(diff_lim_agg_complete,diff_lim_agg_sample)
 names(diff_lim_agg_all)[names(diff_lim_agg_all) == "cit_level"] <- "depth"
 ### Remove duplicates
-duplicates_diff_lim_agg <- duplicated(diff_lim_agg_all[c(12,14)])
+duplicates_diff_lim_agg <- duplicated(diff_lim_agg_all[c(12,14,15)])
 length(duplicates_diff_lim_agg[duplicates_diff_lim_agg== TRUE])
-diff_lim_agg_all <- diff_lim_agg_all[!duplicated(diff_lim_agg_all[c(1,4)]),]
+diff_lim_agg_all <- diff_lim_agg_all[!duplicated(diff_lim_agg_all[c(12,14,15)]),]
 write_excel_csv(diff_lim_agg_all,"data/diff_lim_agg_all.csv")
 
 ## "Social capital, intellectual capital, and the organizational advantage"
@@ -109,6 +109,9 @@ soc_cap_sample_15_11 <- read.csv("data/acs_sociology_abstracts/sample_15/soc_cap
 soc_cap_sample_20_3 <- read.csv("data/acs_sociology_abstracts/sample_20/soc_cap/soc_cap_3_complete.csv")
 soc_cap_sample_20_4 <- read.csv("data/acs_sociology_abstracts/sample_20/soc_cap/soc_cap_4_complete.csv")
 soc_cap_sample_20_5 <- read.csv("data/acs_sociology_abstracts/sample_20/soc_cap/soc_cap_5_complete.csv")
+soc_cap_sample_20_6 <- read.csv("data/acs_sociology_abstracts/sample_20/soc_cap/soc_cap_6_complete.csv")
+soc_cap_sample_20_7 <- read.csv("data/acs_sociology_abstracts/sample_20/soc_cap/soc_cap_7_complete.csv")
+soc_cap_sample_20_8 <- read.csv("data/acs_sociology_abstracts/sample_20/soc_cap/soc_cap_8_complete.csv")
 soc_cap_sample_25_3 <- read.csv("data/acs_sociology_abstracts/sample_25/soc_cap/soc_cap_3_complete.csv")
 soc_cap_sample_25_4 <- read.csv("data/acs_sociology_abstracts/sample_25/soc_cap/soc_cap_4_complete.csv")
 soc_cap_sample_30_3 <- read.csv("data/acs_sociology_abstracts/sample_30/soc_cap/soc_cap_3_complete.csv")
@@ -130,6 +133,9 @@ soc_cap_sample_15_11$sample_percent <- "15"
 soc_cap_sample_20_3$sample_percent <- "20"
 soc_cap_sample_20_4$sample_percent <- "20"
 soc_cap_sample_20_5$sample_percent <- "20"
+soc_cap_sample_20_6$sample_percent <- "20"
+soc_cap_sample_20_7$sample_percent <- "20"
+soc_cap_sample_20_8$sample_percent <- "20"
 soc_cap_sample_25_3$sample_percent <- "25"
 soc_cap_sample_25_4$sample_percent <- "25"
 soc_cap_sample_30_3$sample_percent <- "30"
@@ -140,6 +146,7 @@ soc_cap_sample <- rbind(soc_cap_sample_5_3,soc_cap_sample_5_4,
                         soc_cap_sample_15_6,soc_cap_sample_15_7, soc_cap_sample_15_8,
                         soc_cap_sample_15_9,soc_cap_sample_15_10, soc_cap_sample_15_11,
                         soc_cap_sample_20_3,soc_cap_sample_20_4, soc_cap_sample_20_5,
+                        soc_cap_sample_20_6,soc_cap_sample_20_7, soc_cap_sample_20_8,
                         soc_cap_sample_25_3,soc_cap_sample_25_4,
                         soc_cap_sample_30_3,soc_cap_sample_30_4)
 
@@ -147,9 +154,9 @@ soc_cap_sample <- rbind(soc_cap_sample_5_3,soc_cap_sample_5_4,
 soc_cap_all <- rbind(soc_cap_complete,soc_cap_sample)
 names(soc_cap_all)[names(soc_cap_all) == "cit_level"] <- "depth"
 ### Remove duplicates
-duplicates_soc_cap <- duplicated(soc_cap_all[c(12,14)])
+duplicates_soc_cap <- duplicated(soc_cap_all[c(12,14,15)])
 length(duplicates_soc_cap[duplicates_soc_cap== TRUE])
-soc_cap_all <- soc_cap_all[!duplicated(soc_cap_all[c(1,4)]),]
+soc_cap_all <- soc_cap_all[!duplicated(soc_cap_all[c(12,14,15)]),]
 write_excel_csv(soc_cap_all,"data/soc_cap_all.csv")
 
 ## "Emergence of scaling in random networks"
@@ -185,6 +192,7 @@ emergence_sample_5_9 <- read.csv("data/acs_sociology_abstracts/sample_5/emergenc
 emergence_sample_5_10 <- read.csv("data/acs_sociology_abstracts/sample_5/emergence/emergence_10_complete.csv")
 emergence_sample_10_3 <- read.csv("data/acs_sociology_abstracts/sample_10/emergence/emergence_3_complete.csv")
 emergence_sample_10_4 <- read.csv("data/acs_sociology_abstracts/sample_10/emergence/emergence_4_complete.csv")
+emergence_sample_10_5 <- read.csv("data/acs_sociology_abstracts/sample_10/emergence/emergence_5_complete.csv")
 emergence_sample_5_3$sample_percent <- "5"
 emergence_sample_5_4$sample_percent <- "5"
 emergence_sample_5_5$sample_percent <- "5"
@@ -195,16 +203,17 @@ emergence_sample_5_9$sample_percent <- "5"
 emergence_sample_5_10$sample_percent <- "5"
 emergence_sample_10_3$sample_percent <- "10"
 emergence_sample_10_4$sample_percent <- "10"
+emergence_sample_10_5$sample_percent <- "10"
 emergence_sample <- rbind(emergence_sample_5_3,emergence_sample_5_4,emergence_sample_5_5,
                           emergence_sample_5_6,emergence_sample_5_7,emergence_sample_5_8,
                           emergence_sample_5_9,emergence_sample_5_10,
-                          emergence_sample_10_3,emergence_sample_10_4)
+                          emergence_sample_10_3,emergence_sample_10_4,emergence_sample_10_5)
 
 ### Combine complete citations with sample citations and save to csv
 emergence_all <- rbind(emergence_complete,emergence_sample)
 names(emergence_all)[names(emergence_all) == "cit_level"] <- "depth"
 ### Remove duplicates
-duplicates_emergence <- duplicated(emergence_all[c(12,14)])
+duplicates_emergence <- duplicated(emergence_all[c(12,14,15)])
 length(duplicates_emergence[duplicates_emergence== TRUE])
-emergence_all <- emergence_all[!duplicated(emergence_all[c(1,4)]),]
+emergence_all <- emergence_all[!duplicated(emergence_all[c(12,14,15)]),]
 write_excel_csv(emergence_all,"data/emergence_all.csv")
