@@ -21,7 +21,9 @@ pacman::p_load(tidyverse,
                seededlda,
                FactoMineR,
                factoextra,
-               ggrepel)
+               ggrepel,
+               ggpubr,
+               ggcorrplot)
 #pacman::p_load(bibliometrix,tm,textmineR,purrr,tokenizers,rJava,data.table,dplyr,tidyr,
 #               tidyverse,tidytext,ggpubr,qdap,ggforce,word2vec,cowplot,ggpmisc,ggrepel,
 #               FactoMineR,factoextra,word2vec)
@@ -36,8 +38,15 @@ emergence_all <- read.csv("data/emergence_all.csv")
 # diff_lim_agg_all <- subset(diff_lim_agg_all,sample_percent=="100" | sample_percent=="10")
 # emergence_all <- subset(emergence_all,sample_percent=="100" | sample_percent=="5")
 
+# Create ISI/Web of Science dataframe for bibliometrix
+source("scripts/bibliometrix_clean.R")
+
 # Clean the tiles column of the dataframes
 source("scripts/clean_titles.R")
 
 # Create document frequency matrix and run a topic model
 source("scripts/topic_model.R")
+
+# PCA on topic model data
+source("scripts/pca_topics.R")
+

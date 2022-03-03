@@ -4,7 +4,7 @@ soc_cap_all_topics.pca <- PCA(soc_cap_topics,ncp=10, graph = TRUE)
 # Get coordinates
 ind.sum <- data.frame(soc_cap_all_topics.pca$ind$coord)
 png(file="output/soc_cap/scree_plot.png",width=12, height=12, units="in", res=300)
-  fviz_screeplot(soc_cap_all_topics.pca, ncp=10)
+  fviz_screeplot(soc_cap_all_topics.pca, ncp=50)
 dev.off()
 
 # Includes all demos and regions
@@ -33,21 +33,7 @@ theme_point <- theme(plot.title = element_text(face="bold",size=40),
                      axis.text.y = element_text(color="black",size=36, angle=0),
                      axis.title.y = element_text(color="black",size=48, angle=90))
 
-## STM correlations
-stm_plot1 <- ggplot() +
-  geom_point(soc_cap_all_topics,mapping=aes(x = V4, y = V18),size=12) +
-  geom_smooth(soc_cap_all_topics,mapping=aes(x = V4,y = V18), formula=y~x, method="lm") +
-  geom_vline(xintercept=0, linetype="dashed", color = "black") +
-  geom_hline(yintercept=0, linetype="dashed", color = "black") +
-  labs(title="", x="V4", 
-       y="V18",color="Topic",
-       fill="",caption="") + theme_point +
-  scale_x_continuous() + scale_y_continuous() + theme_classic()
-ggexport(plotlist = list(stm_plot1), 
-         filename = "plots/stm_plot1.png",width=1000,height = 1000)
-
 ## PCA variable plots
-#select_vars <- t(subset(t(stm_main.pca$var$coord),select=c(V4,V8,V9,V18,V25,V43,V49)))
 select_vars <- soc_cap_all_topics.pca$var$coord
 vars <- data.frame(vars=rownames(select_vars))
 select_vars <- cbind(vars,select_vars)
@@ -94,21 +80,26 @@ ggsave(paste0("output/","pca_var_plot2_3.png"), plot = pca_var_plot2_3, scale = 
 # Depth
 dt_order <- unique(soc_cap_all_pca[order(soc_cap_all_pca$depth),]$depth)
 soc_cap_all_pca$depth <- factor(soc_cap_all_pca$depth,levels=dt_order)
+soc_cap_all_pca$dominant_topic <- colnames(soc_cap_all_topics[,16:65])[apply(soc_cap_all_topics[,16:65],1,which.max)]
+soc_cap_all_pca$dominant_topic <- gsub("topic","",soc_cap_all_pca$dominant_topic)
+dt_order2 <- unique(soc_cap_all_pca[order(as.numeric(soc_cap_all_pca$dominant_topic)),]$dominant_topic)
+soc_cap_all_pca$dominant_topic <- factor(soc_cap_all_pca$dominant_topic,levels=dt_order2)
 pca_ind_plot1_2 <- ggplot() +
-  geom_point(soc_cap_all_pca, mapping=aes(x = Dim.1,y = Dim.2, color=year),size=4) +
+  geom_point(soc_cap_all_pca, mapping=aes(x = Dim.1,y = Dim.2, color=dominant_topic),size=4) +
   facet_wrap(~depth,ncol=2) +
   geom_vline(xintercept=0, linetype="dashed", color = "black") +
   geom_hline(yintercept=0, linetype="dashed", color = "black") +
-  #  geom_text_repel(auth_affil_stm %>% group_by(dominate_topic) %>% sample_n(1),mapping=aes(x = dim_1, y = dim_2, 
-  #                                                     label = paste(dominate_topic),
-  #                                                     color = dominate_topic), size=4,
-  #                  box.padding = unit(0.3, "lines"),
-  #                  point.padding = unit(0.3, "lines")) +
-  labs(title="", x="PC1",y="PC2",color="Year",fill="",caption="") +
-  guides(color=guide_legend(ncol=1)) +
+#  geom_text_repel(soc_cap_all_pca %>% group_by(dominant_topic) %>% sample_n(1),
+#                  mapping=aes(x = Dim.1,y = Dim.2,label = paste(dominant_topic),
+#                              color = dominant_topic), size=4,
+#                  point.padding = unit(0.3, "lines")) +
+  labs(title="", x="PC1",y="PC2",color="Dominant Topic",fill="",caption="") +
+  guides(color=guide_legend(ncol=2)) +
   scale_x_continuous() + scale_y_continuous() + theme_classic() + theme_point
-ggsave(paste0("output/","pca_ind_plot1_2.png"), plot = pca_ind_plot1_2, scale = 1,
+ggsave(paste0("output/soc_cap/","pca_ind_plot1_2_topic.png"), plot = pca_ind_plot1_2, scale = 1,
        width = 15, height = 30, dpi = 300, limitsize = TRUE)
+
+
 
 
 # Journal
@@ -118,8 +109,6 @@ years <- na.omit(unique(subset(auth_affil_stm,PY>=2000)$PY))
 years <- years[order(years)]
 for (year in years) {
   pca_ind_journal_plot1_2 <- ggplot() +
-    #  geom_point(subset(auth_affil_stm, dominate_topic==4 | dominate_topic==18), 
-    #             mapping=aes(x = dim_1, y = dim_2, color = dominate_topic),size=12) +
     geom_point(subset(auth_affil_stm, (dominate_topic==4 | dominate_topic==8 | dominate_topic==9 |
                                          dominate_topic==18 | dominate_topic==25 | dominate_topic==40 | dominate_topic==43 |
                                          dominate_topic==49) & rank_journal <=20 & PY==year), 
@@ -138,6 +127,11 @@ for (year in years) {
   ggexport(plotlist = list(pca_ind_journal_plot1_2), 
            filename = paste0("plots/pca_stm_journal/pca_stm_journal_",year,".png"),width=2000,height = 2000)
 }
+
+
+
+
+
 
 # Journal ellipse
 so_order <- unique(auth_affil_stm[order(auth_affil_stm$rank_journal),]$SO)

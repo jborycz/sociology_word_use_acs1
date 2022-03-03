@@ -46,6 +46,40 @@ theme_topic_line <- theme(plot.title = element_text(face="bold",size=24),
                      axis.text.y = element_text(color="black",size=36, angle=0),
                      axis.title.y = element_text(color="black",size=48, angle=90))
 # Plot topics 
+## Correlation plots
+### Depth
+for (i in seq(1,11,1)){
+  soc_cap_all_topics_1 <- subset(soc_cap_all_topics,depth==i)
+  topic_correlation <- round(cor(soc_cap_all_topics_1[,17:66]), 5)
+  topic_correlation_plot <- ggcorrplot(topic_correlation, method = "circle")
+  ggsave(paste0("output/soc_cap/topic/","topic_correlation_depth",i,".png"), plot = topic_correlation_plot, scale = 1,
+         width = 20,height = 20, dpi = 300,limitsize = TRUE)
+}
+### Year
+year_seq <- unique(na.omit(soc_cap_all_topics[order(soc_cap_all_topics$year),]$year))
+for (i in year_seq){
+  soc_cap_all_topics_1 <- subset(soc_cap_all_topics,year==i)
+  topic_correlation <- round(cor(soc_cap_all_topics_1[,17:66]), 5)
+  topic_correlation_plot <- ggcorrplot(topic_correlation, method = "circle")
+  ggsave(paste0("output/soc_cap/topics/ggcorrplot/","topic_correlation_year",i,".png"), plot = topic_correlation_plot, scale = 1,
+         width = 20,height = 20, dpi = 300,limitsize = TRUE)
+}
+### Author
+top_authors <- data.frame(soc_cap_biblioAnalysis$Authors) %>% 
+  arrange(desc(Freq)) %>% 
+  mutate(AU = factor(AU, levels = unique(AU)))
+soc_cap_all_topics <- soc_cap_all_topics %>% separate(author, sep = ";", into = "first_author", remove = FALSE)
+j=1
+for (i in top_authors$AU[1:10]){
+  soc_cap_all_topics_1 <- subset(soc_cap_all_topics,first_author==i)
+  topic_correlation <- round(cor(soc_cap_all_topics_1[,17:66]), 5)
+  topic_correlation_plot <- ggcorrplot(topic_correlation, method = "circle")
+  ggsave(paste0("output/soc_cap/topics/ggcorrplot/","topic_correlation_author",j,".png"), plot = topic_correlation_plot, scale = 1,
+         width = 20,height = 20, dpi = 300,limitsize = TRUE)
+  j=j+1
+}
+
+# Topic by depth - geom_smooth
 ## Depth
 soc_cap_lda_terms <- data.frame(terms(soc_cap_lda))
 soc_cap_lda_terms_long <- gather(soc_cap_lda_terms, topic, words, topic1:topic50, factor_key=TRUE)
@@ -79,16 +113,17 @@ topic_plot2 <- ggplot(temp) +
 topic_plot_combo <- ggarrange(topic_plot1,topic_plot2, ncol = 2, 
                               labels = c("Depth","Year"))
 ggsave(paste0("output/soc_cap/topics/","topic_plot_combo",i,".png"), plot = topic_plot_combo, scale = 1,
-       width = 15,height = 15, dpi = 300,limitsize = TRUE)
+       width = 30,height = 15, dpi = 300,limitsize = TRUE)
 }
 
-## Depth bar
+# Topic by depth - geom_bar
 for (i in seq(1,50,1)){
   j=i+15
+## Depth
   temp <- soc_cap_all_topics[,c(14,j)]
   colnames(temp) <- c("depth","topic")
   topic_plot1 <- temp[-1,] %>% group_by(depth) %>% 
-    summarize(mean_topic=mean(topic),std_topic=sd(topic)) %>% ggplot(mapping=aes(x = as.numeric(depth),y = as.numeric(mean_topic))) +
+    summarize(mean_topic=mean(topic),std_topic=sd(topic)/sqrt(n()),n=n()) %>% ggplot(mapping=aes(x = as.numeric(depth),y = as.numeric(mean_topic))) +
     #  geom_point(mapping=aes(x = as.numeric(depth), y = as.numeric(topic)),size=3) +
     geom_bar(stat="identity",fill="red") +
     geom_errorbar(aes(ymin = mean_topic - std_topic, 
@@ -99,15 +134,11 @@ for (i in seq(1,50,1)){
          y="Topic Value",color="",
          fill="",caption="") + scale_x_continuous() + scale_y_continuous() + 
     theme_classic() + theme_topic_line
-}
-
-## Year bar
-for (i in seq(1,50,1)){
-  j=i+15
+## Year
   temp <- soc_cap_all_topics[,c(7,14,j)]
   colnames(temp) <- c("year","depth","topic")
-  topic_plot1 <- temp[-1,] %>% group_by(year) %>% 
-    summarize(mean_topic=mean(topic),std_topic=sd(topic)) %>% ggplot(mapping=aes(x = as.numeric(year),y = as.numeric(mean_topic))) +
+  topic_plot2 <- temp[-1,] %>% group_by(year) %>% 
+    summarize(mean_topic=mean(topic),std_topic=sd(topic)/sqrt(n()),n=n()) %>% ggplot(mapping=aes(x = as.numeric(year),y = as.numeric(mean_topic))) +
     #  geom_point(mapping=aes(x = as.numeric(depth), y = as.numeric(topic)),size=3) +
     geom_bar(stat="identity",fill="red") +
     geom_errorbar(aes(ymin = mean_topic - std_topic, 
@@ -118,6 +149,8 @@ for (i in seq(1,50,1)){
          y="Topic Value",color="",
          fill="",caption="") + scale_x_continuous() + scale_y_continuous() + 
     theme_classic() + theme_topic_line
-  ggsave(paste0("output/soc_cap/topics/year/","topic_plot_year_bar",i,".png"), plot = topic_plot1, scale = 1,
-         width = 15,height = 15, dpi = 300,limitsize = TRUE)
+  topic_plot_combo <- ggarrange(topic_plot1,topic_plot2, ncol = 2, 
+                                labels = c("Depth","Year"))
+  ggsave(paste0("output/soc_cap/topics/","bar_topic_plot_combo",i,".png"), plot = topic_plot_combo, scale = 1,
+         width = 30,height = 15, dpi = 300,limitsize = TRUE)
 }

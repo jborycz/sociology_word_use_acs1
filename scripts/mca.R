@@ -1,19 +1,19 @@
 # ALL DATA
-soc_cap_all_mca <- soc_cap_all
-names(soc_cap_all_mca)[names(soc_cap_all_mca) == "author"] <- "AU"
-soc_cap_all_mca <- soc_cap_all_mca %>% separate(AU, sep = ";", into = "AU1", remove = FALSE)
-names(soc_cap_all_mca)[names(soc_cap_all_mca) == "title"] <- "TI"
-names(soc_cap_all_mca)[names(soc_cap_all_mca) == "source_title"] <- "SO"
-names(soc_cap_all_mca)[names(soc_cap_all_mca) == "year"] <- "PY"
-names(soc_cap_all_mca)[names(soc_cap_all_mca) == "doi"] <- "DI"
-names(soc_cap_all_mca)[names(soc_cap_all_mca) == "citation_count"] <- "TC"
-names(soc_cap_all_mca)[names(soc_cap_all_mca) == "reference"] <- "CR"
-#  soc_cap_all_mca$CR <- paste("DOI ", soc_cap_all_mca$CR, sep="")
-#  soc_cap_all_mca$CR <- gsub("; ",";DOI ",soc_cap_all_mca$CR)
-#  soc_cap_all_mca$CR[soc_cap_all_mca$CR == "DOI NA" ] <- NA
-soc_cap_all_mca$SR <- paste(soc_cap_all_mca$AU1,soc_cap_all_mca$PY,soc_cap_all_mca$SO,sep=", ")
-soc_cap_all_mca$SR_FULL <- soc_cap_all_mca$SR
-soc_cap_all_mca$DB <- "ISI"
+soc_cap_all_isi <- soc_cap_all
+names(soc_cap_all_isi)[names(soc_cap_all_isi) == "author"] <- "AU"
+soc_cap_all_isi <- soc_cap_all_isi %>% separate(AU, sep = ";", into = "AU1", remove = FALSE)
+names(soc_cap_all_isi)[names(soc_cap_all_isi) == "title"] <- "TI"
+names(soc_cap_all_isi)[names(soc_cap_all_isi) == "source_title"] <- "SO"
+names(soc_cap_all_isi)[names(soc_cap_all_isi) == "year"] <- "PY"
+names(soc_cap_all_isi)[names(soc_cap_all_isi) == "doi"] <- "DI"
+names(soc_cap_all_isi)[names(soc_cap_all_isi) == "citation_count"] <- "TC"
+names(soc_cap_all_isi)[names(soc_cap_all_isi) == "reference"] <- "CR"
+#  soc_cap_all_isi$CR <- paste("DOI ", soc_cap_all_isi$CR, sep="")
+#  soc_cap_all_isi$CR <- gsub("; ",";DOI ",soc_cap_all_isi$CR)
+#  soc_cap_all_isi$CR[soc_cap_all_isi$CR == "DOI NA" ] <- NA
+soc_cap_all_isi$SR <- paste(soc_cap_all_isi$AU1,soc_cap_all_isi$PY,soc_cap_all_isi$SO,sep=", ")
+soc_cap_all_isi$SR_FULL <- soc_cap_all_isi$SR
+soc_cap_all_isi$DB <- "ISI"
 
 soc_cap_all_mca <- subset(soc_cap_all_mca,sample_percent=="100" | sample_percent=="20")
 soc_cap_all_mca_6 <- subset(soc_cap_all_mca,depth=="6")
