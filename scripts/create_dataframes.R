@@ -180,6 +180,12 @@ emergence_150_199_1 <- read.csv("data/acs_sociology_abstracts/cit_150_199/emerge
 emergence_150_199_2 <- read.csv("data/acs_sociology_abstracts/cit_150_199/emergence/emergence_2_complete.csv")
 emergence_200_99999_1 <- read.csv("data/acs_sociology_abstracts/cit_200_99999/emergence/emergence_1_complete.csv")
 emergence_200_99999_2 <- read.csv("data/acs_sociology_abstracts/cit_200_99999/emergence/emergence_2_complete.csv")
+emergence_complete <- rbind(emergence_1_9_0,emergence_1_9_1,emergence_1_9_2,
+                            emergence_10_19_1,emergence_10_19_2,emergence_20_29_1,emergence_20_29_2,
+                            emergence_30_39_1,emergence_30_39_2,emergence_40_49_1,emergence_40_49_2,
+                            emergence_50_99_1,emergence_50_99_2,emergence_100_149_1,emergence_100_149_2,
+                            emergence_150_199_1,emergence_150_199_2,emergence_200_99999_1,emergence_200_99999_2)
+emergence_complete$sample_percent <- "100"
 
 ### Samples by percentage (5-4000 citation liimits)
 emergence_sample_5_3 <- read.csv("data/acs_sociology_abstracts/sample_5/emergence/emergence_3_complete.csv")
