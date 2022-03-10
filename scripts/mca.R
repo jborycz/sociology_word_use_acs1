@@ -36,37 +36,20 @@ res <- couplingMap(M, analysis = "authors", field = "TI", n = 100, impact.measur
                    minfreq = 1, size = 0.5, repel = TRUE)
 plot(res$map)
 
-### APPLY BIBLIOMETRIX TO CODE
-results <- biblioAnalysis(soc_cap_all_mca_6)
-summary(results, k=10, pause=F, width=130)
-
-res <- couplingMap(soc_cap_all_mca_6, analysis="authors",field = "TI", n = 100, 
-                   impact.measure="global",minfreq = 2, size = 0.5, repel = TRUE)
-plot(res$map)
-
-# Coupling map
-author_coupling <- biblioNetwork(soc_cap_all_mca_6, analysis = "coupling", network = "authors", sep = ";")
-author_coupling_net=networkPlot(author_coupling, n = 50, Title = "Author Coupling Network", type = "fruchterman", size.cex=TRUE, 
-                size=20, remove.multiple=FALSE, labelsize=0.7,edgesize = 10, edges.min=5)
-png(file="output/author_coupling.png",
-    width=12, height=12, units="in", res=300)
-  networkPlot(author_coupling, n = 50, Title = "Author Coupling Network", type = "fruchterman", size.cex=TRUE, 
-            size=20, remove.multiple=FALSE, labelsize=0.7,edgesize = 10, edges.min=5)
-dev.off()
 
 # PERFORM MCA
 cs_title <- conceptualStructure(
-  subset(soc_cap_all_mca_6[1:1000,]),
+  subset(soc_cap_all_isi),
   field = "TI",
   method = "MCA",
   quali.supp = NULL,
   quanti.supp = NULL,
-  minDegree = 5,
+  minDegree = 3,
   clust ="auto",
   k.max = 8,
   stemming = FALSE,
   labelsize = 12,
-  documents = 5,
+  documents = 2,
   graph = TRUE
 )
 
