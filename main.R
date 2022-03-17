@@ -25,6 +25,7 @@ pacman::p_load(tidyverse,
                ggpubr,
                ggcorrplot,
                ggalluvial,
+               ggformula,
                Hmisc)
 #pacman::p_load(bibliometrix,tm,textmineR,purrr,tokenizers,rJava,data.table,dplyr,tidyr,
 #               tidyverse,tidytext,ggpubr,qdap,ggforce,word2vec,cowplot,ggpmisc,ggrepel,

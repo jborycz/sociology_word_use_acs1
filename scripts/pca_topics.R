@@ -86,7 +86,7 @@ pca_var_plot1_2 <- ggplot(select_vars) +
   geom_point(select_vars, 
              mapping=aes(x = Dim.1, y = Dim.2),size=12) +
   geom_text_repel(select_vars,mapping= aes(x = Dim.1, y = Dim.2,
-                                           label=vars),color="black",size=12) + 
+                                           label=as.numeric(gsub("X","",vars))+1),color="black",size=12) + 
   geom_vline(xintercept=0, linetype="dashed", color = "black") +
   geom_hline(yintercept=0, linetype="dashed", color = "black") +
   labs(title="", x="PC1",y="PC2",color="",fill="",caption="") +
@@ -104,7 +104,7 @@ pca_var_plot1_2 <- ggplot(select_vars) +
   geom_point(select_vars, 
              mapping=aes(x = Dim.1, y = Dim.2),size=12) +
   geom_text_repel(select_vars,mapping= aes(x = Dim.1, y = Dim.2,
-                                           label=vars),color="black",size=12) + 
+                                           label=as.numeric(gsub("X","",vars))+1),color="black",size=12) + 
   geom_vline(xintercept=0, linetype="dashed", color = "black") +
   geom_hline(yintercept=0, linetype="dashed", color = "black") +
   labs(title="", x="PC1",y="PC2",color="",fill="",caption="") +
@@ -122,7 +122,7 @@ pca_var_plot1_2 <- ggplot(select_vars) +
   geom_point(select_vars, 
              mapping=aes(x = Dim.1, y = Dim.2),size=12) +
   geom_text_repel(select_vars,mapping= aes(x = Dim.1, y = Dim.2,
-                                           label=vars),color="black",size=12) + 
+                                           label=as.numeric(gsub("X","",vars))+1),color="black",size=12) + 
   geom_vline(xintercept=0, linetype="dashed", color = "black") +
   geom_hline(yintercept=0, linetype="dashed", color = "black") +
   labs(title="", x="PC1",y="PC2",color="",fill="",caption="") +
@@ -157,7 +157,7 @@ diff_lim_agg_all_pca$dominant_topic <- colnames(diff_lim_agg_all_pca[,16:27])[ap
 diff_lim_agg_all_pca$dominant_topic <- as.numeric(gsub("X","",diff_lim_agg_all_pca$dominant_topic))+1
 dt_order2 <- unique(diff_lim_agg_all_pca[order(as.numeric(diff_lim_agg_all_pca$dominant_topic)),]$dominant_topic)
 diff_lim_agg_all_pca$dominant_topic <- factor(diff_lim_agg_all_pca$dominant_topic,levels=dt_order2)
-pca_ind_plot1_2 <- subset(diff_lim_agg_all_pca,as.numeric(max_depth)>=2 & as.numeric(max_depth)<=7) %>% ggplot() +
+pca_ind_plot1_2 <- subset(diff_lim_agg_all_pca,as.numeric(max_depth)>=1 & as.numeric(max_depth)<=6) %>% ggplot() +
   geom_point(mapping=aes(x = Dim.1,y = Dim.2, color=dominant_topic),size=4) +
   facet_wrap(~max_depth,ncol=2) +
   geom_vline(xintercept=0, linetype="dashed", color = "black") +

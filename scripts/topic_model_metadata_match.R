@@ -94,9 +94,15 @@ temp_all %>% group_by(min_depth) %>% summarise(n_val=n())
 temp_all %>% group_by(max_depth) %>% summarise(n_val=n())
 emergence_all_topics_forwards_dedup <- temp_all
 
+# Write min/max to files
 write_csv(soc_cap_all_topics_forwards_dedup,"data/soc_cap_horne_dedup_min_max.csv")
 write_csv(diff_lim_agg_all_topics_forwards_dedup,"data/diff_lim_agg_horne_dedup_min_max.csv")
 write_csv(emergence_all_topics_forwards_dedup,"data/emergence_horne_dedup_min_max.csv")
+
+# Read in min/max files
+soc_cap_all_topics_forwards_dedup <- read_csv("data/soc_cap_horne_dedup_min_max.csv")
+diff_lim_agg_all_topics_forwards_dedup <- read_csv("data/diff_lim_agg_horne_dedup_min_max.csv")
+emergence_all_topics_forwards_dedup <- read_csv("data/emergence_horne_dedup_min_max.csv")
 
 # Compute mean and std errors for all topics
 ## soc_cap
@@ -178,8 +184,8 @@ theme_topic_line <- theme(plot.title = element_text(face="bold",size=24),
                           axis.text.x = element_text(color="black",size=36, angle=0),
                           strip.text.x = element_text(color="black",face="bold",size=36),
                           axis.title.x = element_text(color="black",size=48, angle=0),
-                          axis.text.y = element_text(color="black",size=36, angle=0),
-                          axis.title.y = element_text(color="black",size=48, angle=90))
+                          axis.text.y = element_blank(),
+                          axis.title.y = element_blank())
 theme_soc_cap_line <- theme(plot.title = element_text(face="bold",size=24),
                               legend.position = "none",
                               legend.key.size = unit(1.5, "cm"),
@@ -197,10 +203,10 @@ soc_cap_topic_means <- subset(soc_cap_topic_depth_mean_long,max_depth_mean>=1 & 
   mutate(label=if_else(max_depth_mean==1,as.character(topic), NA_character_)) %>%
   ggplot(aes(x=max_depth_mean, y=mean, color=as.character(topic))) +
   #  geom_area(aes(x=max_depth_mean, y=se_all),color="red",fill="red",position = "identity") +
-  geom_smooth(aes(linetype=as.character(topic)),size=2) + geom_errorbar(aes(ymin=mean-se, ymax=mean+se,color=as.character(topic)), size=1, width=2, position=position_dodge(0.2)) + 
+  geom_line(aes(linetype=as.character(topic)),size=2) + geom_errorbar(aes(ymin=mean-se, ymax=mean+se,color=as.character(topic)), size=1, width=2, position=position_dodge(0.2)) + 
   coord_cartesian(xlim=c(1,8),ylim=c(0,0.25)) + scale_x_discrete(limits=c("1","2","3","4","5","6","7","8")) + 
   labs(x="Depth", y="Topic Proportion") +
-theme_classic() + theme_topic_line + geom_label_repel(aes(label = label),nudge_x = -0.3, size=12,na.rm = TRUE)
+theme_classic() + theme_soc_cap_line + geom_label_repel(aes(label = label),nudge_x = -0.3, size=12,na.rm = TRUE)
 ggsave(paste0("output/soc_cap/topics/","soc_cap_topic_means.png"), plot = soc_cap_topic_means, scale = 1,
        width = 20,height = 20, dpi = 300,limitsize = TRUE)
   ## diff_lim_agg
@@ -208,7 +214,7 @@ diff_lim_agg_topic_means <- subset(diff_lim_agg_topic_depth_mean_long,max_depth_
   mutate(label=if_else(max_depth_mean==1,as.character(topic), NA_character_)) %>%
   ggplot(aes(x=max_depth_mean, y=mean, color=as.character(topic))) +
   #  geom_area(aes(x=max_depth_mean, y=se_all),color="red",fill="red",position = "identity") +
-  geom_smooth(aes(linetype=as.character(topic)),size=2) + geom_errorbar(aes(ymin=mean-se, ymax=mean+se,color=as.character(topic)), size=1, width=2, position=position_dodge(0.2)) + 
+  geom_line(aes(linetype=as.character(topic)),size=2) + geom_errorbar(aes(ymin=mean-se, ymax=mean+se,color=as.character(topic)), size=1, width=2, position=position_dodge(0.2)) + 
   coord_cartesian(xlim=c(1,8),ylim=c(0,0.25)) + scale_x_discrete(limits=c("1","2","3","4","5","6","7","8")) + 
   labs(x="Depth", y="Topic Proportion") +
 theme_classic() + theme_topic_line + geom_label_repel(aes(label = label),nudge_x = -0.3, size=12,na.rm = TRUE)
@@ -219,14 +225,112 @@ emergence_topic_means <- subset(emergence_topic_depth_mean_long,max_depth_mean>=
   mutate(label=if_else(max_depth_mean==1,as.character(topic), NA_character_)) %>%
   ggplot(aes(x=max_depth_mean, y=mean, color=as.character(topic))) +
   #  geom_area(aes(x=max_depth_mean, y=se_all),color="red",fill="red",position = "identity") +
-  geom_smooth(aes(linetype=as.character(topic)),size=2) + geom_errorbar(aes(ymin=mean-se, ymax=mean+se,color=as.character(topic)), size=1, width=2, position=position_dodge(0.2)) + 
+  geom_line(aes(linetype=as.character(topic)),size=2) + geom_errorbar(aes(ymin=mean-se, ymax=mean+se,color=as.character(topic)), size=1, width=2, position=position_dodge(0.2)) + 
   coord_cartesian(xlim=c(1,8),ylim=c(0,0.25)) + scale_x_discrete(limits=c("1","2","3","4","5","6","7","8")) + 
   labs(x="Depth", y="Topic Proportion") +
-theme_classic() + theme_emergence_line + geom_label_repel(aes(label = label),nudge_x = -0.3, size=12,na.rm = TRUE)
+theme_classic() + theme_topic_line + geom_label_repel(aes(label = label),nudge_x = -0.3, size=12,na.rm = TRUE)
 ggsave(paste0("output/emergence/topics/","emergence_topic_means.png"), plot = emergence_topic_means, scale = 1,
        width = 20,height = 20, dpi = 300,limitsize = TRUE)
-
 all_topic_line_plots <- ggarrange(soc_cap_topic_means, diff_lim_agg_topic_means, emergence_topic_means, nrow = 1,labels=c("a","b","c"),
                                   font.label = list(size = 50, color = "black", face = "bold"))
 ggsave(paste0("output/","all_topic_line_plots.png"), plot = all_topic_line_plots, scale = 1,
+       width = 45, height = 15, dpi = 300,limitsize = TRUE)
+
+# Area plots
+## soc_cap
+soc_cap_topic_depth_mean_long$topic <- factor(soc_cap_topic_depth_mean_long$topic,levels = c(1,2,3,4,5,6,7,8,9,10,11,12,13))
+soc_cap_topic_area <- subset(soc_cap_topic_depth_mean_long,max_depth_mean>=1 & max_depth_mean<=8) %>% 
+  ggplot(aes(x=max_depth_mean, y=mean, color=topic)) +
+  geom_area(aes(fill=topic),size=2,color="black",stat="identity",position="stack") + 
+  geom_text(data = soc_cap_topic_depth_mean_long %>% 
+              filter(max_depth_mean == 8) %>%
+              mutate(value = cumsum(rev(mean))), 
+            aes(label = rev(topic), 
+                x =8.25, 
+                y = value, 
+                color = rev(topic)),size=14) + 
+  coord_cartesian(xlim=c(1,8),ylim=c(0,1)) + scale_x_discrete(limits=c("1","2","3","4","5","6","7","8")) + 
+  labs(x="Depth", y="Topic Proportion") +
+  theme_classic() + theme_soc_cap_line
+ggsave(paste0("output/soc_cap/topics/","soc_cap_topic_area.png"), plot = soc_cap_topic_area, scale = 1,
+       width = 20,height = 20, dpi = 300,limitsize = TRUE)
+## diff_lim_agg
+diff_lim_agg_topic_depth_mean_long$topic <- factor(diff_lim_agg_topic_depth_mean_long$topic,levels = c(1,2,3,4,5,6,7,8,9,10,11,12,13))
+diff_lim_agg_topic_area <- subset(diff_lim_agg_topic_depth_mean_long,max_depth_mean>=1 & max_depth_mean<=8) %>% 
+  ggplot(aes(x=max_depth_mean, y=mean, color=topic)) +
+  geom_area(aes(fill=topic),size=2,color="black",stat="identity",position="stack") + 
+  geom_text(data = diff_lim_agg_topic_depth_mean_long %>% 
+              filter(max_depth_mean == 8) %>%
+              mutate(value = cumsum(rev(mean))), 
+            aes(label = rev(topic), 
+                x =8.25, 
+                y = value, 
+                color = rev(topic)),size=14) + 
+  coord_cartesian(xlim=c(1,8),ylim=c(0,1)) + scale_x_discrete(limits=c("1","2","3","4","5","6","7","8")) + 
+  labs(x="Depth", y="Topic Proportion") +
+  theme_classic() + theme_topic_line
+ggsave(paste0("output/diff_lim_agg/topics/","diff_lim_agg_topic_area.png"), plot = diff_lim_agg_topic_area, scale = 1,
+       width = 20,height = 20, dpi = 300,limitsize = TRUE)
+## emergence
+emergence_topic_depth_mean_long$topic <- factor(emergence_topic_depth_mean_long$topic,levels = c(1,2,3,4,5,6,7,8,9,10,11,12,13))
+emergence_topic_area <- subset(emergence_topic_depth_mean_long,max_depth_mean>=1 & max_depth_mean<=8) %>% 
+  ggplot(aes(x=max_depth_mean, y=mean, color=topic)) +
+  geom_area(aes(fill=topic),size=2,color="black",stat="identity",position="stack") + 
+  geom_text(data = emergence_topic_depth_mean_long %>% 
+              filter(max_depth_mean == 8) %>%
+              mutate(value = cumsum(rev(mean))), 
+            aes(label = rev(topic), 
+                x =8.25, 
+                y = value, 
+                color = rev(topic)),size=14) + 
+  coord_cartesian(xlim=c(1,8),ylim=c(0,1)) + scale_x_discrete(limits=c("1","2","3","4","5","6","7","8")) + 
+  labs(x="Depth", y="Topic Proportion") +
+  theme_classic() + theme_topic_line
+ggsave(paste0("output/emergence/topics/","emergence_topic_area.png"), plot = emergence_topic_area, scale = 1,
+       width = 20,height = 20, dpi = 300,limitsize = TRUE)
+
+all_topic_area_plots <- ggarrange(soc_cap_topic_area, diff_lim_agg_topic_area, emergence_topic_area, nrow = 1,labels=c("a","b","c"),
+                                  font.label = list(size = 50, color = "black", face = "bold"))
+ggsave(paste0("output/","all_topic_area_plots.png"), plot = all_topic_area_plots, scale = 1,
+       width = 45, height = 15, dpi = 300,limitsize = TRUE)
+
+# Plot topics - depth 
+# Smooth plot
+## soc_cap
+soc_cap_all_topics_forwards_dedup_long <- gather(soc_cap_all_topics_forwards_dedup , topic, value, X0:X12, factor_key=TRUE)
+soc_cap_all_topics_forwards_dedup_long$topic <- gsub("X","",soc_cap_all_topics_forwards_dedup_long$topic)
+soc_cap_all_topics_forwards_dedup_long$topic <- as.numeric(soc_cap_all_topics_forwards_dedup_long$topic) + 1
+soc_cap_topic_smooth <- soc_cap_all_topics_forwards_dedup_long %>% 
+  mutate(label=if_else(max_depth==1,as.character(topic), NA_character_)) %>%
+  ggplot(aes(x=max_depth, y=value, color=as.character(topic))) +
+  stat_smooth(aes(linetype=as.character(topic),fill = as.character(topic)),size=2,method="gam",span=1) + 
+  coord_cartesian(xlim=c(1,8),ylim=c(0,0.25)) + scale_x_discrete(limits=c("1","2","3","4","5","6","7","8")) + 
+  labs(x="Depth", y="Topic Proportion") +
+  theme_classic() + theme_soc_cap_line #+ geom_label_repel(aes(label = label),nudge_x = -0.3, size=12,na.rm = TRUE)
+## diff_lim_agg
+diff_lim_agg_all_topics_forwards_dedup_long <- gather(diff_lim_agg_all_topics_forwards_dedup , topic, value, X0:X11, factor_key=TRUE)
+diff_lim_agg_all_topics_forwards_dedup_long$topic <- gsub("X","",diff_lim_agg_all_topics_forwards_dedup_long$topic)
+diff_lim_agg_all_topics_forwards_dedup_long$topic <- as.numeric(diff_lim_agg_all_topics_forwards_dedup_long$topic) + 1
+diff_lim_agg_topic_smooth <- diff_lim_agg_all_topics_forwards_dedup_long %>% 
+  mutate(label=if_else(max_depth==1,as.character(topic), NA_character_)) %>%
+  ggplot(aes(x=max_depth, y=value, color=as.character(topic))) +
+  stat_smooth(aes(linetype=as.character(topic),fill = as.character(topic)),size=2,method="gam",span=1) + 
+  coord_cartesian(xlim=c(1,8),ylim=c(0,0.25)) + scale_x_discrete(limits=c("1","2","3","4","5","6","7","8")) + 
+  labs(x="Depth", y="Topic Proportion") +
+  theme_classic() + theme_topic_line #+ geom_label_repel(aes(label = label),nudge_x = -0.3, size=12,na.rm = TRUE)
+## emergence
+emergence_all_topics_forwards_dedup_long <- gather(emergence_all_topics_forwards_dedup , topic, value, X0:X11, factor_key=TRUE)
+emergence_all_topics_forwards_dedup_long$topic <- gsub("X","",emergence_all_topics_forwards_dedup_long$topic)
+emergence_all_topics_forwards_dedup_long$topic <- as.numeric(emergence_all_topics_forwards_dedup_long$topic) + 1
+emergence_topic_smooth <- emergence_all_topics_forwards_dedup_long %>% 
+  mutate(label=if_else(max_depth==1,as.character(topic), NA_character_)) %>%
+  ggplot(aes(x=max_depth, y=value, color=as.character(topic))) +
+  stat_smooth(aes(linetype=as.character(topic),fill = as.character(topic)),size=2,method="gam",span=1) + 
+  coord_cartesian(xlim=c(1,8),ylim=c(0,0.25)) + scale_x_discrete(limits=c("1","2","3","4","5","6","7","8")) + 
+  labs(x="Depth", y="Topic Proportion") +
+  theme_classic() + theme_topic_line #+ geom_label_repel(aes(label = label),nudge_x = -0.3, size=12,na.rm = TRUE)
+
+all_topic_smooth_plots <- ggarrange(soc_cap_topic_smooth, diff_lim_agg_topic_smooth, emergence_topic_smooth, nrow = 1,labels=c("a","b","c"),
+                                  font.label = list(size = 50, color = "black", face = "bold"))
+ggsave(paste0("output/","all_topic_smooth_plots.png"), plot = all_topic_smooth_plots, scale = 1,
        width = 45, height = 15, dpi = 300,limitsize = TRUE)
