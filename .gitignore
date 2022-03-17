@@ -4,7 +4,17 @@
 .Ruserdata
 .RDataTmp
 sociology_word_use_ACS.Rproj
-output
+output/coci
+output/soc_cap_all
+output/diff_lim_agg/topics/geom_bar
+output/diff_lim_agg/topics/geom_smooth
+output/diff_lim_agg/topics/ggcorrplot
+output/soc_cap/topics/geom_bar
+output/soc_cap/topics/geom_smooth
+output/soc_cap/topics/ggcorrplot
+output/emergence/topics/geom_bar
+output/emergence/topics/geom_smooth
+output/emergence/topics/ggcorrplot
 backup
 data
 
