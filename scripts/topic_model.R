@@ -18,17 +18,17 @@ emergence_all_dfm2 <- dfm_trim(emergence_all_dfm, min_docfreq = 3)
 ## dfm_trim(soc_cap_all_dfm, min_termfreq = 0.2, max_docfreq = 2, termfreq_type = "quantile")
 
 # Topic model
-soc_cap_lda <- textmodel_lda(soc_cap_all_dfm2, k = 50)
-diff_lim_agg_lda <- textmodel_lda(diff_lim_agg_all_dfm2, k = 50)
-emergence_lda <- textmodel_lda(emergence_all_dfm2, k = 50)
+soc_cap_lda <- textmodel_lda(soc_cap_all_dfm2, k = 180)
+diff_lim_agg_lda <- textmodel_lda(diff_lim_agg_all_dfm2, k = 172)
+emergence_lda <- textmodel_lda(emergence_all_dfm2, k = 135)
 
 # Export
-write.csv(soc_cap_lda$phi,"output/soc_cap/soc_cap_topic_model_phi.csv")
-write.csv(soc_cap_lda$theta,"output/soc_cap/soc_cap_topic_model_theta.csv")
-write.csv(diff_lim_agg_lda$phi,"output/diff_lim_agg/diff_lim_agg_topic_model_phi.csv")
-write.csv(diff_lim_agg_lda$theta,"output/diff_lim_agg/diff_lim_agg_topic_model_theta.csv")
-write.csv(emergence_lda$phi,"output/emergence/emergence_topic_model_phi.csv")
-write.csv(emergence_lda$theta,"output/emergence/emergence_topic_model_theta.csv")
+write_csv(soc_cap_lda$phi,"output/soc_cap/soc_cap_topic_model_phi.csv")
+write_csv(soc_cap_lda$theta,"output/soc_cap/soc_cap_topic_model_theta.csv")
+write_csv(diff_lim_agg_lda$phi,"output/diff_lim_agg/diff_lim_agg_topic_model_phi.csv")
+write_csv(diff_lim_agg_lda$theta,"output/diff_lim_agg/diff_lim_agg_topic_model_theta.csv")
+write_csv(emergence_lda$phi,"output/emergence/emergence_topic_model_phi.csv")
+write_csv(emergence_lda$theta,"output/emergence/emergence_topic_model_theta.csv")
 
 # Combine theta with original dataframe
 soc_cap_topics <- data.frame(soc_cap_lda$theta)
@@ -41,11 +41,23 @@ emergence_topics <- data.frame(emergence_lda$theta)
 emergence_topics <- data.frame(lapply(emergence_topics,as.numeric))
 emergence_all_topics <- cbind(emergence_all, emergence_topics)
 
+# Topic model data - optimized k (Ben Horne)
+soc_cap_k_topics <- read_csv("data/doc_to_topics_soc_cap_selected_preprocessed.csv")
+diff_lim_agg_k_topics <- read_csv("data/doc_to_topics_diff_lim_agg_selected_preprocessed.csv")
+emergence_k_topics <- read_csv("data/doc_to_topics_emergence_selected_preprocessed.csv")
+
+## Combine k topics with the original paper citation data
+left_join()
+
+
 # Compute mean and std errors for all topics
 ## soc_cap
 ### Mean
-soc_cap_topic_depth_mean <- soc_cap_all_topics %>% gather(topic,value,topic1:topic50) %>% 
-  group_by(depth,topic) %>% mutate(mean=mean(value),sd=sd(value))
+soc_cap_topic_depth_mean <- soc_cap_all_topics %>%
+  group_by(depth) %>%
+  summarise(n=n(),across(topic1:topic50, mean))
+#soc_cap_topic_depth_mean <- soc_cap_all_topics %>% gather(topic,value,topic1:topic50) %>% 
+#  group_by(depth,topic) %>% mutate(mean=mean(value),sd=sd(value))
 new_mean_names <- paste(colnames(soc_cap_topic_depth_mean), "_mean", sep="")
 colnames(soc_cap_topic_depth_mean) <- new_mean_names
 ### Standard error
