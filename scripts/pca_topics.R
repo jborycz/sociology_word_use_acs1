@@ -140,7 +140,7 @@ soc_cap_all_pca$dominant_topic <- colnames(soc_cap_all_pca[,16:28])[apply(soc_ca
 soc_cap_all_pca$dominant_topic <- as.numeric(gsub("X","",soc_cap_all_pca$dominant_topic))+1
 dt_order2 <- unique(soc_cap_all_pca[order(as.numeric(soc_cap_all_pca$dominant_topic)),]$dominant_topic)
 soc_cap_all_pca$dominant_topic <- factor(soc_cap_all_pca$dominant_topic,levels=dt_order2)
-pca_ind_plot1_2 <- subset(soc_cap_all_pca,as.numeric(max_depth)>=2 & as.numeric(max_depth)<=7) %>% ggplot() +
+pca_ind_plot1_2 <- subset(soc_cap_all_pca,as.numeric(max_depth)>=1 & as.numeric(max_depth)<=7) %>% ggplot() +
   geom_point(mapping=aes(x = Dim.1,y = Dim.2, color=dominant_topic),size=4) +
   facet_wrap(~max_depth,ncol=2) +
   geom_vline(xintercept=0, linetype="dashed", color = "black") +
@@ -151,15 +151,15 @@ pca_ind_plot1_2 <- subset(soc_cap_all_pca,as.numeric(max_depth)>=2 & as.numeric(
 ggsave(paste0("output/soc_cap/pca/","soc_cap_pca_ind_plot1_2_topic.png"), plot = pca_ind_plot1_2, scale = 1,
        width = 15, height = 30, dpi = 300, limitsize = TRUE)
 # diff_lim_agg
-dt_order <- unique(diff_lim_agg_all_pca[order(diff_lim_agg_all_pca$max_depth),]$max_depth)
-diff_lim_agg_all_pca$max_depth <- factor(diff_lim_agg_all_pca$max_depth,levels=dt_order)
+dt_order <- unique(diff_lim_agg_all_pca[order(diff_lim_agg_all_pca$depth),]$depth)
+diff_lim_agg_all_pca$max_depth <- factor(diff_lim_agg_all_pca$depth,levels=dt_order)
 diff_lim_agg_all_pca$dominant_topic <- colnames(diff_lim_agg_all_pca[,16:27])[apply(diff_lim_agg_all_pca[,16:27],1,which.max)]
 diff_lim_agg_all_pca$dominant_topic <- as.numeric(gsub("X","",diff_lim_agg_all_pca$dominant_topic))+1
 dt_order2 <- unique(diff_lim_agg_all_pca[order(as.numeric(diff_lim_agg_all_pca$dominant_topic)),]$dominant_topic)
 diff_lim_agg_all_pca$dominant_topic <- factor(diff_lim_agg_all_pca$dominant_topic,levels=dt_order2)
-pca_ind_plot1_2 <- subset(diff_lim_agg_all_pca,as.numeric(max_depth)>=1 & as.numeric(max_depth)<=6) %>% ggplot() +
+pca_ind_plot1_2 <- subset(diff_lim_agg_all_pca,as.numeric(max_depth)>=0 & as.numeric(max_depth)<=6) %>% ggplot() +
   geom_point(mapping=aes(x = Dim.1,y = Dim.2, color=dominant_topic),size=4) +
-  facet_wrap(~max_depth,ncol=2) +
+  facet_wrap(~depth,ncol=2) +
   geom_vline(xintercept=0, linetype="dashed", color = "black") +
   geom_hline(yintercept=0, linetype="dashed", color = "black") +
   labs(title="", x="PC1",y="PC2",color="Topic",fill="",caption="") +
@@ -174,7 +174,7 @@ emergence_all_pca$dominant_topic <- colnames(emergence_all_pca[,16:27])[apply(em
 emergence_all_pca$dominant_topic <- as.numeric(gsub("X","",emergence_all_pca$dominant_topic))+1
 dt_order2 <- unique(emergence_all_pca[order(as.numeric(emergence_all_pca$dominant_topic)),]$dominant_topic)
 emergence_all_pca$dominant_topic <- factor(emergence_all_pca$dominant_topic,levels=dt_order2)
-pca_ind_plot1_2 <- subset(emergence_all_pca,as.numeric(max_depth)>=2 & as.numeric(max_depth)<=7) %>% ggplot() +
+pca_ind_plot1_2 <- subset(emergence_all_pca,as.numeric(max_depth)>=0 & as.numeric(max_depth)<=7) %>% ggplot() +
   geom_point(mapping=aes(x = Dim.1,y = Dim.2, color=dominant_topic),size=4) +
   facet_wrap(~max_depth,ncol=2) +
   geom_vline(xintercept=0, linetype="dashed", color = "black") +

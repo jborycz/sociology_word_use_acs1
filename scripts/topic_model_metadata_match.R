@@ -71,6 +71,8 @@ temp_all$max_depth <- ifelse(is.na(temp_all$max_depth), temp_all$depth, temp_all
 temp_all %>% group_by(min_depth) %>% summarise(n_val=n())
 temp_all %>% group_by(max_depth) %>% summarise(n_val=n())
 diff_lim_agg_all_topics_forwards_dedup <- temp_all
+diff_lim_agg_all_topics_forwards_dedup$min_depth[1] <- 0
+diff_lim_agg_all_topics_forwards_dedup$max_depth[1] <- 0
 ### emergence
 temp_all <- emergence_all_topics_forwards_dedup 
 last_col_1 <- ncol(temp_all)+1
